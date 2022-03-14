@@ -1,2 +1,2 @@
 # vadomenbot
-Telegram Bot
+Telegram Bot: `t.me/vadomenbot`
