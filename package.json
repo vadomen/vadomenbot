@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/vadomen/vadomenbot#readme",
   "dependencies": {
+    "rss-feed-emitter": "^3.2.3",
     "telegraf": "^4.7.0",
     "ts-dotenv": "^0.8.3"
   },

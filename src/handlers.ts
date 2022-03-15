@@ -5,8 +5,6 @@ const token: string = process.env.BOT_TOKEN as string;
 const telegram: Telegram = new Telegram(token);
 const bot: Telegraf<Context<Update>> = new Telegraf(token);
 
-const chatId: string = process.env.CHAT_ID as string;
-
 bot.start((ctx) => {
   ctx.reply(`Hello ${ctx.from.first_name} ${ctx.chat.id}!`);
 });
@@ -38,15 +36,9 @@ bot.on('text', (ctx) => {
     (ctx.message.text === 'first' ? 'First' : 'Second') +
     ' Option!'
   );
-
-  if (chatId) {
-    telegram.sendMessage(
-      chatId,
-      'This message was sent without your interaction!'
-    );
-  }
 });
 
 export {
-    bot,
+  bot,
+  telegram
 };
