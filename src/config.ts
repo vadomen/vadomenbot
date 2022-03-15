@@ -6,6 +6,7 @@ export const schema = {
     NODE_ENV: String,
     BOT_TOKEN: String,
     CHANNEL_NAME: String,
+    FEED_REFRESH_INTERVAL: Number,
 };
 
 export let config: Config;
