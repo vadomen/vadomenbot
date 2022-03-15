@@ -11,7 +11,7 @@ const launch = (telegram: any, chatName: String) => {
   feeder.on('liga', function(item: any) {
     const message = `${item.title}
   ${item.link}`;
-    setTimeout(() => telegram.sendMessage(chatName, message), 500);
+    setTimeout(() => telegram.sendMessage(chatName, message), 1000);
   });
 };
 
