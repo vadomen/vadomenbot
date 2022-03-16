@@ -20,8 +20,9 @@ export class Feeder {
   broadcast = async () => {
     try {
       const sourcesPromises = this.sources.map(s => parser.parseURL(s));
-      let feeds = await Promise.all(sourcesPromises);
-      const news = feeds.reduce((previousValue: any[], currentValue: any) => ([...previousValue, ...currentValue.items]),[]);
+      let feeds = await Promise.allSettled(sourcesPromises);
+      feeds = feeds.filter(f => f.status === 'fulfilled');
+      const news = feeds.reduce((previousValue: any[], currentValue: any) => ([...previousValue, ...currentValue.value.items]),[]);
       const date = moment().subtract(this.interval, 'milliseconds');
       console.log(date.format());
       news.forEach(item => {
