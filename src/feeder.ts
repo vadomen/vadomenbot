@@ -24,10 +24,14 @@ export class Feeder {
       feeds = feeds.filter(f => f.status === 'fulfilled');
       const news = feeds.reduce((previousValue: any[], currentValue: any) => ([...previousValue, ...currentValue.value.items]),[]);
       const date = moment().subtract(this.interval, 'milliseconds');
+      let counter = 0;
       news.forEach(item => {
         if(moment(item.pubDate).isAfter(date)) {
           const message = `${item.link} ${item.pubDate} `;
-          this.telegram.sendMessage(this.channelId, message)
+          if(counter <= 30) {
+            this.telegram.sendMessage(this.channelId, message)
+          }
+          counter++;
         }
       });
     } catch (e: any) {
