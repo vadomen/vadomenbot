@@ -1,12 +1,13 @@
 import { loadConfig } from './config';
-import { bot, telegram } from './handlers';
+import { telegram, bot } from './handlers';
 import { Feeder } from './feeder';
 
 loadConfig();
-
-const chatName: string = process.env.CHANNEL_NAME as string;
 bot.launch();
-Feeder.launch(telegram, chatName)
+
+const chatId: string = process.env.CHANNEL_NAME as string;
+const feeder = new Feeder(telegram, chatId);
+feeder.launch()
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

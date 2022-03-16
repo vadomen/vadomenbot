@@ -1,30 +1,42 @@
-import RssFeedEmitter from 'rss-feed-emitter';
-const feeder = new RssFeedEmitter();
+import Parser from 'rss-parser';
+import { Telegram } from 'telegraf';
+import moment from 'moment';
 
-const interval: number = Number(process.env.FEED_REFRESH_INTERVAL) || 60 as number;
+const parser: Parser = new Parser({});
 
-const launch = (telegram: any, chatName: String) => {
-  feeder.add({
-    url: 'https://www.liga.net/news/top/rss.xml',
-    refresh: interval * 60 * 1000, // 10 minutes
-    eventName: 'liga'
-  });
+export class Feeder {
+  interval: number = Number(process.env.FEED_REFRESH_INTERVAL) || 60 as number;
+  telegram: Telegram;
+  channelId: string | number;
+  sources: string[];
 
-  let delay = 1000;
+  constructor(telegram: Telegram, channelId: string | number) {
+    this.telegram = telegram;
+    this.channelId = channelId;
+    this.interval = this.interval * 60 * 1000; // 1 hour
+    this.sources = ['https://www.pravda.com.ua/rss/view_mainnews/', 'https://www.liga.net/news/top/rss.xml'];
+  }
 
-  feeder.on('liga', function(item: any) {
-    const message = `${item.title}
-  ${item.link}`;
-    if(delay > 15000) delay = 1000;
-    setTimeout(() => telegram.sendMessage(chatName, message), delay);
-    delay = delay + 500;
-  });
-};
+  broadcast = async () => {
+    try {
+      const sourcesPromises = this.sources.map(s => parser.parseURL(s));
+      let feeds = await Promise.all(sourcesPromises);
+      const news = feeds.reduce((previousValue: any[], currentValue: any) => ([...previousValue, ...currentValue.items]),[]);
+      const date = moment().subtract(this.interval, 'milliseconds');
+      console.log(date.format());
+      news.forEach(item => {
+        if(moment(item.pubDate).isAfter(date)) {
+          const message = `${item.title} ${item.link} ${item.pubDate} `;
+          this.telegram.sendMessage(this.channelId, message)
+        }
+      });
+    } catch (e: any) {
+      throw new Error(e);
+    }
 
-const Feeder = {
-  launch
-}
-
-export {
-  Feeder,
+  }
+  launch = () => {
+    this.broadcast();
+    setInterval(this.broadcast, this.interval);
+  }
 }
