@@ -14,7 +14,7 @@ export class Feeder {
     this.telegram = telegram;
     this.channelId = channelId;
     this.interval = this.interval * 60 * 1000; // 1 hour
-    this.sources = ['https://www.pravda.com.ua/rss/view_mainnews/', 'https://www.liga.net/news/top/rss.xml'];
+    this.sources = ['https://censor.net/includes/news_uk.xml', 'https://fakty.ua/rss_feed/ukraine' ,'https://www.liga.net/news/top/rss.xml'];
   }
 
   broadcast = async () => {
