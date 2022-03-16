@@ -24,10 +24,9 @@ export class Feeder {
       feeds = feeds.filter(f => f.status === 'fulfilled');
       const news = feeds.reduce((previousValue: any[], currentValue: any) => ([...previousValue, ...currentValue.value.items]),[]);
       const date = moment().subtract(this.interval, 'milliseconds');
-      console.log(date.format());
       news.forEach(item => {
         if(moment(item.pubDate).isAfter(date)) {
-          const message = `${item.title} ${item.link} ${item.pubDate} `;
+          const message = `${item.link} ${item.pubDate} `;
           this.telegram.sendMessage(this.channelId, message)
         }
       });
