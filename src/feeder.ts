@@ -28,7 +28,7 @@ export class Feeder {
       news.forEach(item => {
         if(moment(item.pubDate).isAfter(date)) {
           const message = `${item.link} ${item.pubDate} `;
-          if(counter <= 30) {
+          if(counter < 29) {
             this.telegram.sendMessage(this.channelId, message)
           }
           counter++;
