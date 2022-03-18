@@ -9,12 +9,14 @@ export class Feeder {
   telegram: Telegram;
   channelId: string | number;
   sources: string[];
+  processInterval: any;
 
   constructor(telegram: Telegram, channelId: string | number) {
     this.telegram = telegram;
     this.channelId = channelId;
     this.interval = this.interval * 60 * 1000;
-    this.sources = ['https://censor.net/includes/news_uk.xml' ,'https://www.liga.net/news/top/rss.xml'];
+    this.sources = ['https://censor.net/includes/news_uk.xml' ,'https://www.liga.net/news/top/rss.xml', 'http://feeds.bbci.co.uk/news/world/rss.xml'];
+    this.processInterval = null;
   }
 
   broadcast = async () => {
@@ -36,8 +38,14 @@ export class Feeder {
       throw new Error(e);
     }
   }
+
+  stop = (message: string) => {
+    clearInterval(this.processInterval);
+    console.warn(message);
+  }
+
   launch = () => {
     this.broadcast();
-    setInterval(this.broadcast, this.interval);
+    this.processInterval = setInterval(this.broadcast, this.interval);
   }
 }
