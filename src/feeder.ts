@@ -1,6 +1,7 @@
 import Parser from 'rss-parser';
 import { Telegram } from 'telegraf';
 import moment from 'moment';
+import { hyperlink } from './markdown';
 
 const parser: Parser = new Parser({});
 
@@ -15,7 +16,7 @@ export class Feeder {
     this.telegram = telegram;
     this.channelId = channelId;
     this.interval = this.interval * 60 * 1000;
-    this.sources = ['https://censor.net/includes/news_uk.xml' ,'https://www.liga.net/news/top/rss.xml', 'http://feeds.bbci.co.uk/news/world/rss.xml'];
+    this.sources = ['https://censor.net/includes/news_uk.xml' ,'https://www.liga.net/news/top/rss.xml', 'https://feeds.bbci.co.uk/news/world/rss.xml'];
     this.processInterval = null;
   }
 
@@ -26,14 +27,10 @@ export class Feeder {
       let feeds = await Promise.allSettled(sourcesPromises);
       feeds = feeds.filter(f => f.status === 'fulfilled');
       let news = feeds.reduce((previousValue: any[], currentValue: any) => ([...previousValue, ...currentValue.value.items]),[]);
-      news = news.slice(0, 29);
       const date = moment().subtract(this.interval, 'milliseconds');
-      news.forEach(item => {
-        if(moment(item.pubDate).isAfter(date)) {
-          const message = `${item.link} ${item.pubDate}`;
-          this.telegram.sendMessage(this.channelId, message);
-        }
-      });
+      news = news.filter(item => moment(item.pubDate).isAfter(date));
+      news = news.slice(0, 29);
+      news.forEach(item => this.telegram.sendMessage(this.channelId, hyperlink(item.title, item.link)));
     } catch (e: any) {
       throw new Error(e);
     }
@@ -45,7 +42,6 @@ export class Feeder {
   }
 
   launch = () => {
-    this.broadcast();
     this.processInterval = setInterval(this.broadcast, this.interval);
   }
 }
