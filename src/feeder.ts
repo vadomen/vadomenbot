@@ -2,6 +2,7 @@ import Parser from 'rss-parser';
 import { Telegram } from 'telegraf';
 import moment from 'moment';
 import { hyperlink } from './markdown';
+const Extra = require('telegraf/extra');
 
 const parser: Parser = new Parser({});
 
@@ -30,7 +31,7 @@ export class Feeder {
       const date = moment().subtract(this.interval, 'milliseconds');
       news = news.filter(item => moment(item.pubDate).isAfter(date));
       news = news.slice(0, 29);
-      news.forEach(item => this.telegram.sendMessage(this.channelId, hyperlink(item.title, item.link)));
+      news.forEach(item => this.telegram.sendMessage(this.channelId, hyperlink(item.title, item.link), Extra.markdown()));
     } catch (e: any) {
       throw new Error(e);
     }
@@ -42,6 +43,11 @@ export class Feeder {
   }
 
   launch = () => {
-    this.processInterval = setInterval(this.broadcast, this.interval);
+    if(process.env.NODE_ENV === 'production') {
+      this.processInterval = setInterval(this.broadcast, this.interval);
+    }
+    if(process.env.NODE_ENV === 'development') {
+      this.broadcast();
+    }
   }
 }
