@@ -30,7 +30,7 @@ export class Feeder {
       const date = moment().subtract(this.interval, 'milliseconds');
       news = news.filter(item => moment(item.pubDate).isAfter(date));
       news = news.slice(0, 29);
-      news.forEach(item => this.telegram.sendMessage(this.channelId, hyperlink(item.title, item.link), { parse_mode: "MarkdownV2" }));
+      news.forEach(item => this.telegram.sendMessage(this.channelId, hyperlink(item.title, item.link), { parse_mode: "HTML" }));
     } catch (e: any) {
       throw new Error(e);
     }

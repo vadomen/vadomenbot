@@ -1,5 +1,5 @@
 const hyperlink = (title: string, link: string): string => {
-  return `[${title}](${link})`;
+  return `<a href="${link}">${title}</a>`;
 };
 
 export {
