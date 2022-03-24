@@ -30,17 +30,19 @@ bot.command('keyboard', (ctx) => {
   );
 });
 
-bot.on('text', (ctx) => {
-  ctx.reply(
-    'You choose the ' +
-    (ctx.message.text === 'first' ? 'First' : 'Second') +
-    ' Option!'
-  );
-});
+// bot.on('text', (ctx) => {
+//   ctx.reply(
+//     'You choose the ' +
+//     (ctx.message.text === 'first' ? 'First' : 'Second') +
+//     ' Option!'
+//   );
+// });
 
-bot.hears('first', (ctx) => ctx.reply(
-  'You choose the First Option!'
-));
+// bot.hears('first', (ctx) => ctx.reply(
+//   'You choose the First Option!'
+// ));
+
+bot.action('first', (ctx) => ctx.reply('_First_'));
 
 export {
   bot,
