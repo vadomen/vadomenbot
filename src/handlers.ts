@@ -38,6 +38,10 @@ bot.on('text', (ctx) => {
   );
 });
 
+bot.hears('first', (ctx) => ctx.reply(
+  'You choose the First Option!'
+));
+
 export {
   bot,
   telegram
