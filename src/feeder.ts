@@ -16,20 +16,28 @@ export class Feeder {
     this.telegram = telegram;
     this.channelId = channelId;
     this.interval = this.interval * 60 * 1000;
-    this.sources = ['https://censor.net/includes/news_uk.xml' ,'https://www.liga.net/news/top/rss.xml', 'https://feeds.bbci.co.uk/news/world/rss.xml'];
+    this.sources = ['https://censor.net/includes/news_uk.xml' ,'https://www.liga.net/news/top/rss.xml'];
     this.processInterval = null;
   }
 
-  broadcast = async () => {
+  _feeds = async () => {
     try {
-      console.info('Process started');
       const sourcesPromises = this.sources.map(s => parser.parseURL(s));
       let feeds = await Promise.allSettled(sourcesPromises);
       feeds = feeds.filter(f => f.status === 'fulfilled');
       let news = feeds.reduce((previousValue: any[], currentValue: any) => ([...previousValue, ...currentValue.value.items]),[]);
       const date = moment().subtract(this.interval, 'milliseconds');
       news = news.filter(item => moment(item.pubDate).isAfter(date));
-      news = news.slice(0, 29);
+      return news.slice(0, 29);
+    } catch (e: any) {
+      throw new Error(e);
+    }
+  }
+
+  _broadcast = async () => {
+    try {
+      console.info('Process started');
+      const news = await this._feeds();
       news.forEach(item => this.telegram.sendMessage(this.channelId, hyperlink(item.title, item.link), { parse_mode: "HTML" }));
     } catch (e: any) {
       throw new Error(e);
@@ -43,10 +51,10 @@ export class Feeder {
 
   launch = () => {
     if(process.env.NODE_ENV === 'production') {
-      this.processInterval = setInterval(this.broadcast, this.interval);
+      this.processInterval = setInterval(this._broadcast, this.interval);
     }
     if(process.env.NODE_ENV === 'development') {
-      this.broadcast();
+      this._broadcast();
     }
   }
 }

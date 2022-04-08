@@ -24,25 +24,19 @@ bot.command('keyboard', (ctx) => {
   ctx.reply(
     'Keyboard',
     Markup.inlineKeyboard([
-      Markup.button.callback('First option', 'first'),
-      Markup.button.callback('Second option', 'second'),
+      Markup.button.callback('Add RSS source', 'AddRssSource'),
+      Markup.button.callback('Remove RSS source', 'RemoveRssSource'),
     ])
   );
 });
 
-// bot.on('text', (ctx) => {
-//   ctx.reply(
-//     'You choose the ' +
-//     (ctx.message.text === 'first' ? 'First' : 'Second') +
-//     ' Option!'
-//   );
-// });
+bot.action('AddRssSource', (ctx) =>
+  ctx.reply('AddRssSource')
+);
 
-// bot.hears('first', (ctx) => ctx.reply(
-//   'You choose the First Option!'
-// ));
-
-bot.action('first', (ctx) => ctx.reply('_First_'));
+bot.action('RemoveRssSource', (ctx) =>
+  ctx.reply('RemoveRssSource')
+);
 
 export {
   bot,
