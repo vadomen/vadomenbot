@@ -1,12 +1,12 @@
 import { loadConfig } from './config';
-import { telegram, bot } from './handlers';
-import { Feeder } from './feeder';
+import { telegram, bot } from './bot';
+import { Publisher } from './publisher';
 
 loadConfig();
 bot.launch();
 
 const chatId: string = process.env.CHANNEL_NAME as string;
-const feeder = new Feeder(telegram, chatId);
+const feeder = new Publisher(telegram, chatId);
 feeder.launch()
 
 process.once('SIGINT', () => {
