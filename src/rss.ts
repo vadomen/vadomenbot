@@ -15,20 +15,18 @@ export class Rss {
     return channels();
   }
 
-  async getUrlList(): Promise<string[]> {
+  async getUrlList() {
     try {
       const sources  = await this.findAll();
       return sources.map(s => s.url);
-    } catch (e) {
-      console.error(e);
-      return [];
+    } catch (e: any) {
+      throw new Error(e);
     }
   }
 
   getContent = async () => {
     try {
       const urls = await this.getUrlList();
-      if(!urls.length) return console.warn('No urls found');
       const sourcesPromises = urls.map(s => parser.parseURL(s));
       let feeds = await Promise.allSettled(sourcesPromises);
       feeds = feeds.filter(f => f.status === 'fulfilled');
@@ -37,7 +35,7 @@ export class Rss {
       news = news.filter(item => moment(item.pubDate).isAfter(date));
       return news.slice(0, 29);
     } catch (e: any) {
-      console.error(e);
+      throw new Error(e);
     }
   }
 }
